@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDP Monday Mixer — Admin Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a3a2a;
+    --deep-green: #0f2318;
+    --mid-green: #2d5a3d;
+    --light-green: #4a8c5c;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #9a7a2a;
+    --cream: #f5f0e8;
+    --warm-white: #faf7f2;
+    --danger: #c0392b;
+    --danger-light: #e74c3c;
+    --success: #27ae60;
+    --panel-bg: rgba(255,255,255,0.04);
+    --border: rgba(201,168,76,0.18);
+    --border-hover: rgba(201,168,76,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    background: var(--deep-green);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 1000;
+    background:
+      radial-gradient(ellipse at 25% 70%, rgba(74,140,92,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      linear-gradient(160deg, #071210 0%, #0f2318 50%, #1a3a2a 100%);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  #loginScreen.hidden { opacity:0; pointer-events:none; transform:scale(1.04); }
+
+  .login-card {
+    background: rgba(10,26,16,0.85);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3.5rem 3rem;
+    width: 420px; max-width: 95vw;
+    text-align: center;
+    position: relative;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    animation: loginIn 0.7s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes loginIn {
+    from { opacity:0; transform:translateY(30px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+  .login-card::before {
+    content:'';
+    position:absolute; top:0; left:2rem; right:2rem; height:2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .login-icon {
+    font-size: 2.8rem; margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 16px rgba(201,168,76,0.5));
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+  .login-eyebrow {
+    font-size: 0.62rem; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .login-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 300;
+    color: var(--warm-white); margin-bottom: 0.4rem;
+  }
+  .login-title em { color: var(--gold); font-style: italic; }
+  .login-sub {
+    font-size: 0.65rem; color: rgba(245,240,232,0.35);
+    letter-spacing: 0.15em; margin-bottom: 2.5rem;
+  }
+
+  .login-group { margin-bottom: 1rem; text-align:left; }
+  .login-label {
+    display:block; font-size:0.6rem; letter-spacing:0.3em;
+    text-transform:uppercase; color:var(--gold);
+    margin-bottom:0.4rem; font-weight:600;
+  }
+  .login-input {
+    width:100%; background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border); border-radius:3px;
+    padding: 0.75rem 1rem; color:var(--warm-white);
+    font-family:'Josefin Sans',sans-serif; font-size:0.9rem;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { outline:none; border-color:var(--gold); background:rgba(201,168,76,0.05); }
+
+  .login-btn {
+    width:100%; margin-top:0.5rem;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border:none; border-radius:3px; padding:0.9rem;
+    font-family:'Josefin Sans',sans-serif;
+    font-size:0.72rem; letter-spacing:0.3em; font-weight:600;
+    text-transform:uppercase; color:var(--deep-green);
+    cursor:pointer; transition: all 0.25s;
+  }
+  .login-btn:hover { box-shadow:0 8px 32px rgba(201,168,76,0.4); transform:translateY(-2px); }
+  .login-btn:active { transform:translateY(0); }
+
+  .login-error {
+    margin-top:1rem; padding:0.7rem; border-radius:3px;
+    background:rgba(192,57,43,0.15); border:1px solid rgba(192,57,43,0.4);
+    font-size:0.75rem; color:#e74c3c; display:none;
+  }
+
+  .login-hint {
+    margin-top:1.5rem; font-size:0.6rem;
+    color:rgba(245,240,232,0.2); letter-spacing:0.1em;
+  }
+
+  /* ── ADMIN SHELL ── */
+  #adminShell { display:none; min-height:100vh; }
+  #adminShell.visible { display:flex; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px; flex-shrink:0;
+    background: rgba(5,15,10,0.9);
+    border-right: 1px solid var(--border);
+    display:flex; flex-direction:column;
+    position: sticky; top:0; height:100vh;
+    overflow-y:auto;
+  }
+
+  .sidebar-logo {
+    padding: 1.8rem 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo-main {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.5rem; color:var(--gold); font-weight:600; letter-spacing:0.05em;
+  }
+  .sidebar-logo-sub {
+    font-size:0.55rem; letter-spacing:0.25em; color:rgba(245,240,232,0.3);
+    text-transform:uppercase; margin-top:0.2rem;
+  }
+
+  .sidebar-nav { padding:1.5rem 0; flex:1; }
+  .sidebar-section-label {
+    font-size:0.55rem; letter-spacing:0.3em; color:rgba(201,168,76,0.4);
+    text-transform:uppercase; padding:0 1.5rem; margin-bottom:0.5rem;
+    margin-top:1.5rem;
+  }
+  .sidebar-section-label:first-child { margin-top:0; }
+
+  .nav-item {
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.65rem 1.5rem; cursor:pointer;
+    font-size:0.72rem; letter-spacing:0.12em;
+    color:rgba(245,240,232,0.55); text-transform:uppercase;
+    transition: all 0.2s; border-left:2px solid transparent;
+    user-select:none;
+  }
+  .nav-item:hover { color:var(--cream); background:rgba(201,168,76,0.06); }
+  .nav-item.active {
+    color:var(--gold); background:rgba(201,168,76,0.1);
+    border-left-color:var(--gold);
+  }
+  .nav-icon { font-size:1rem; width:20px; text-align:center; }
+
+  .sidebar-footer {
+    padding:1.2rem 1.5rem; border-top:1px solid var(--border);
+  }
+  .logout-btn {
+    width:100%; background:transparent;
+    border:1px solid rgba(192,57,43,0.3); border-radius:3px;
+    padding:0.5rem; color:rgba(192,57,43,0.7);
+    font-family:'Josefin Sans',sans-serif;
+    font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .logout-btn:hover { background:rgba(192,57,43,0.1); border-color:var(--danger-light); color:var(--danger-light); }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex:1; overflow-y:auto;
+    background: linear-gradient(180deg, #0a1a10 0%, var(--deep-green) 100%);
+  }
+
+  .topbar {
+    background:rgba(5,15,10,0.8); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:1rem 2.5rem;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+  }
+  .topbar-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.4rem; font-weight:300; color:var(--warm-white);
+  }
+  .topbar-title em { color:var(--gold); font-style:italic; }
+  .topbar-badge {
+    font-size:0.6rem; letter-spacing:0.2em; color:var(--gold);
+    background:rgba(201,168,76,0.12); border:1px solid var(--border);
+    padding:0.3rem 0.8rem; border-radius:20px; text-transform:uppercase;
+  }
+
+  .content { padding:2.5rem; }
+
+  /* ── PANELS / CARDS ── */
+  .panel {
+    background:var(--panel-bg); border:1px solid var(--border);
+    border-radius:6px; margin-bottom:2rem; overflow:hidden;
+    transition:border-color 0.3s;
+  }
+  .panel:hover { border-color:var(--border-hover); }
+
+  .panel-header {
+    padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    background:rgba(255,255,255,0.02);
+  }
+  .panel-title {
+    font-size:0.65rem; letter-spacing:0.3em;
+    text-transform:uppercase; color:var(--gold); font-weight:600;
+  }
+  .panel-body { padding:1.5rem; }
+
+  /* ── FORM ELEMENTS ── */
+  .field-grid { display:grid; gap:1rem; }
+  .field-grid-2 { grid-template-columns:1fr 1fr; }
+  .field-grid-3 { grid-template-columns:1fr 1fr 1fr; }
+
+  .field { display:flex; flex-direction:column; gap:0.4rem; }
+  .field-label {
+    font-size:0.58rem; letter-spacing:0.25em;
+    text-transform:uppercase; color:var(--gold); font-weight:600;
+  }
+  .field-input, .field-select, .field-textarea {
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--border); border-radius:3px;
+    padding:0.65rem 0.9rem; color:var(--warm-white);
+    font-family:'Josefin Sans',sans-serif; font-size:0.82rem;
+    transition:border-color 0.2s;
+    width:100%;
+  }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    outline:none; border-color:var(--gold); background:rgba(201,168,76,0.05);
+  }
+  .field-textarea { resize:vertical; min-height:80px; line-height:1.5; }
+  .field-select option { background:#1a3a2a; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family:'Josefin Sans',sans-serif;
+    font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase;
+    font-weight:600; padding:0.55rem 1.2rem; border-radius:3px;
+    border:none; cursor:pointer; transition:all 0.2s;
+  }
+  .btn-gold {
+    background:linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color:var(--deep-green);
+  }
+  .btn-gold:hover { box-shadow:0 6px 20px rgba(201,168,76,0.4); transform:translateY(-1px); }
+  .btn-outline {
+    background:transparent; border:1px solid var(--border);
+    color:rgba(245,240,232,0.6);
+  }
+  .btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+  .btn-danger {
+    background:rgba(192,57,43,0.15); border:1px solid rgba(192,57,43,0.3);
+    color:var(--danger-light);
+  }
+  .btn-danger:hover { background:rgba(192,57,43,0.3); }
+  .btn-sm { padding:0.35rem 0.8rem; font-size:0.55rem; }
+  .btn-group { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
+
+  /* ── TEAMS TABLE ── */
+  .teams-table { width:100%; border-collapse:collapse; }
+  .teams-table thead tr { border-bottom:1px solid var(--border); }
+  .teams-table thead th {
+    font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--gold); padding:0.6rem 0.8rem; text-align:left; font-weight:600;
+  }
+  .teams-table tbody tr { border-bottom:1px solid rgba(201,168,76,0.06); transition:background 0.15s; }
+  .teams-table tbody tr:hover { background:rgba(201,168,76,0.04); }
+  .teams-table td { padding:0.7rem 0.8rem; font-size:0.8rem; vertical-align:middle; }
+  .team-num { color:var(--gold); font-family:'Cormorant Garamond',serif; font-size:1.1rem; text-align:center; width:40px; }
+  .inline-input {
+    background:rgba(255,255,255,0.05); border:1px solid transparent;
+    border-radius:3px; padding:0.4rem 0.6rem; color:var(--warm-white);
+    font-family:'Josefin Sans',sans-serif; font-size:0.8rem; width:100%;
+    transition:border-color 0.2s;
+  }
+  .inline-input:focus { outline:none; border-color:var(--gold); background:rgba(201,168,76,0.05); }
+
+  /* ── SCHEDULE GRID ── */
+  .schedule-week-row {
+    background:var(--panel-bg); border:1px solid var(--border);
+    border-radius:4px; margin-bottom:1rem; overflow:hidden;
+  }
+  .schedule-week-head {
+    padding:0.7rem 1.2rem; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:1rem;
+    background:rgba(201,168,76,0.04);
+  }
+  .sched-wk-label {
+    font-size:0.6rem; letter-spacing:0.3em; color:var(--gold);
+    text-transform:uppercase; font-weight:600; min-width:70px;
+  }
+  .schedule-week-body { padding:0.75rem 1.2rem; display:grid; gap:0.5rem; }
+
+  .matchup-edit-row {
+    display:grid; grid-template-columns:1fr auto 1fr auto;
+    align-items:center; gap:0.6rem;
+  }
+  .vs-badge {
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic; color:var(--gold); font-size:0.95rem;
+    text-align:center; padding:0 0.3rem;
+  }
+
+  /* ── SCORE MANAGEMENT ── */
+  .score-week-panel { margin-bottom:1.5rem; }
+  .score-match-grid { display:grid; gap:0.6rem; }
+  .score-row-edit {
+    display:grid; grid-template-columns:1fr 80px 30px 80px auto;
+    align-items:center; gap:0.6rem;
+    padding:0.6rem 0.8rem;
+    background:rgba(255,255,255,0.03); border-radius:3px;
+    border:1px solid rgba(201,168,76,0.06);
+  }
+  .score-team-name { font-size:0.78rem; color:var(--warm-white); }
+  .score-vs { font-size:0.7rem; color:var(--gold); font-style:italic; text-align:center; }
+  .score-num-input {
+    background:rgba(255,255,255,0.07); border:1px solid var(--border);
+    border-radius:3px; padding:0.4rem; color:var(--warm-white);
+    font-family:'Josefin Sans',sans-serif; font-size:0.82rem;
+    text-align:center; width:100%;
+  }
+  .score-num-input:focus { outline:none; border-color:var(--gold); }
+
+  /* ── COURSE INFO ── */
+  .course-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  @media(max-width:800px){ .course-grid,.field-grid-2,.field-grid-3{ grid-template-columns:1fr; } }
+
+  /* ── SECTION PAGES ── */
+  .page { display:none; }
+  .page.active { display:block; animation:pageIn 0.3s ease; }
+  @keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1rem;
+    margin-bottom:2rem;
+  }
+  .stat-card {
+    background:var(--panel-bg); border:1px solid var(--border);
+    border-radius:4px; padding:1.2rem 1.5rem;
+    text-align:center; transition:border-color 0.2s;
+  }
+  .stat-card:hover { border-color:var(--border-hover); }
+  .stat-num {
+    font-family:'Cormorant Garamond',serif;
+    font-size:2.5rem; color:var(--gold-light); font-weight:600;
+    display:block;
+  }
+  .stat-lbl {
+    font-size:0.58rem; letter-spacing:0.2em; color:rgba(245,240,232,0.4);
+    text-transform:uppercase; margin-top:0.2rem;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:2rem; right:2rem;
+    padding:0.9rem 1.4rem; border-radius:4px;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.08em;
+    transform:translateY(4rem); opacity:0;
+    transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index:9999; pointer-events:none;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { background:linear-gradient(135deg,#1a5c2e,#27ae60); color:#fff; }
+  .toast.gold    { background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:var(--deep-green); }
+  .toast.error   { background:linear-gradient(135deg,#7b1a1a,var(--danger-light)); color:#fff; }
+
+  /* ── CONFIRM DIALOG ── */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.7);
+    z-index:500; display:none; align-items:center; justify-content:center;
+    backdrop-filter:blur(4px);
+  }
+  .overlay.open { display:flex; }
+  .confirm-box {
+    background:#0f2318; border:1px solid var(--border); border-radius:6px;
+    padding:2rem; max-width:380px; text-align:center;
+    box-shadow:0 30px 60px rgba(0,0,0,0.7);
+  }
+  .confirm-box h3 { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--warm-white); margin-bottom:0.5rem; }
+  .confirm-box p { font-size:0.75rem; color:rgba(245,240,232,0.5); margin-bottom:1.5rem; }
+  .confirm-btns { display:flex; gap:0.75rem; justify-content:center; }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🏌️</div>
+    <p class="login-eyebrow">PDP Monday Mixer</p>
+    <h1 class="login-title">Admin <em>Portal</em></h1>
+    <p class="login-sub">Authorized personnel only</p>
+
+    <div class="login-group">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="loginUser" type="text" placeholder="admin" autocomplete="username" />
+    </div>
+    <div class="login-group">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔐 &nbsp; Sign In to Admin Panel</button>
+    <div class="login-error" id="loginError">Incorrect username or password. Please try again.</div>
+    <p class="login-hint">Default: admin / pdpgolf2025</p>
+  </div>
+</div>
+
+<!-- ── ADMIN SHELL ── -->
+<div id="adminShell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-main">⛳ PDP Monday Mixer</div>
+      <div class="sidebar-logo-sub">Admin Portal</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+
+      <div class="sidebar-section-label">League Setup</div>
+      <div class="nav-item" onclick="showPage('teams',this)">
+        <span class="nav-icon">👥</span> Team Names
+      </div>
+      <div class="nav-item" onclick="showPage('schedule',this)">
+        <span class="nav-icon">📅</span> Schedule
+      </div>
+      <div class="nav-item" onclick="showPage('teeTimes',this)">
+        <span class="nav-icon">⏰</span> Tee Times
+      </div>
+      <div class="nav-item" onclick="showPage('course',this)">
+        <span class="nav-icon">🏌️</span> Course Info
+      </div>
+
+      <div class="sidebar-section-label">Season</div>
+      <div class="nav-item" onclick="showPage('scores',this)">
+        <span class="nav-icon">🏆</span> Manage Scores
+      </div>
+      <div class="nav-item" onclick="showPage('highlights',this)">
+        <span class="nav-icon">⭐</span> Weekly Highlights
+      </div>
+      <div class="nav-item" onclick="showPage('settings',this)">
+        <span class="nav-icon">⚙️</span> Settings
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">⬅ Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">League <em>Dashboard</em></div>
+      <div class="topbar-badge">Season 2025 · 13 Weeks · 14 Teams</div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-bar">
+          <div class="stat-card">
+            <span class="stat-num" id="dash-teams">12</span>
+            <div class="stat-lbl">Teams</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="dash-weeks">12</span>
+            <div class="stat-lbl">Weeks</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="dash-scores">0</span>
+            <div class="stat-lbl">Scores Recorded</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="dash-complete">0%</span>
+            <div class="stat-lbl">Season Complete</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">⚡ Quick Actions</span>
+          </div>
+          <div class="panel-body">
+            <div class="btn-group">
+              <button class="btn btn-gold" onclick="showPage('teams',document.querySelector('[onclick*=teams]'))">Edit Team Names</button>
+              <button class="btn btn-outline" onclick="showPage('teeTimes',document.querySelector('[onclick*=teeTimes]'))">Set Tee Times</button>
+              <button class="btn btn-outline" onclick="showPage('course',document.querySelector('[onclick*=course]'))">Update Course Info</button>
+              <button class="btn btn-outline" onclick="showPage('scores',document.querySelector('[onclick*=scores]'))">Manage Scores</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📋 Current Standings Preview</span>
+          </div>
+          <div class="panel-body" id="dashStandings"></div>
+        </div>
+      </div>
+
+      <!-- ── TEAMS ── -->
+      <div class="page" id="page-teams">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">👥 Team Names & Contacts</span>
+            <button class="btn btn-gold btn-sm" onclick="saveTeams()">💾 Save All Teams</button>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1.2rem;letter-spacing:0.05em;">
+              Edit team names, player names, and contact info. Changes sync to the main leaderboard and schedule automatically.
+            </p>
+            <table class="teams-table" id="teamsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Team Name</th>
+                  <th>Player 1 (He)</th>
+                  <th>Player 2 (She)</th>
+                  <th>Contact Email</th>
+                  <th>Handicap</th>
+                </tr>
+              </thead>
+              <tbody id="teamsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCHEDULE ── -->
+      <div class="page" id="page-schedule">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📅 Weekly Schedule & Dates</span>
+            <button class="btn btn-gold btn-sm" onclick="saveSchedule()">💾 Save Schedule</button>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1.5rem;letter-spacing:0.05em;">
+              The round-robin matchups are auto-generated. Edit the date for each week below.
+            </p>
+            <div id="scheduleEditor"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TEE TIMES ── -->
+      <div class="page" id="page-teeTimes">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">⏰ Weekly Tee Times</span>
+            <button class="btn btn-gold btn-sm" onclick="saveTimes()">💾 Save Tee Times</button>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1.5rem;letter-spacing:0.05em;">
+              Set tee times for each matchup per week. These will display on the public schedule.
+            </p>
+            <div id="teeTimesEditor"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COURSE INFO ── -->
+      <div class="page" id="page-course">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">🏌️ Course Information</span>
+            <button class="btn btn-gold btn-sm" onclick="saveCourse()">💾 Save Course Info</button>
+          </div>
+          <div class="panel-body">
+            <div class="course-grid">
+              <div>
+                <div class="field-grid" style="gap:1rem">
+                  <div class="field">
+                    <label class="field-label">Course Name</label>
+                    <input class="field-input" id="courseName" placeholder="e.g. Pinecrest Golf Club" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Course Address</label>
+                    <input class="field-input" id="courseAddress" placeholder="123 Fairway Dr, City, ST 00000" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Phone Number</label>
+                    <input class="field-input" id="coursePhone" placeholder="(555) 000-0000" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Website</label>
+                    <input class="field-input" id="courseWebsite" placeholder="www.example.com" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Pro Shop Contact</label>
+                    <input class="field-input" id="courseProShop" placeholder="Pro shop name / person" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Format / Game Type</label>
+                    <select class="field-select" id="courseFormat">
+                      <option>Best Ball (4-Ball)</option>
+                      <option>Scramble</option>
+                      <option>Match Play</option>
+                      <option>Stroke Play</option>
+                      <option>Stableford</option>
+                      <option>Mixed Scramble</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="field-grid" style="gap:1rem">
+                  <div class="field">
+                    <label class="field-label">Par</label>
+                    <input class="field-input" id="coursePar" type="number" placeholder="72" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Yards (Men's Tees)</label>
+                    <input class="field-input" id="courseYardsMen" type="number" placeholder="6800" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Yards (Ladies' Tees)</label>
+                    <input class="field-input" id="courseYardsLadies" type="number" placeholder="5400" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Course Rating</label>
+                    <input class="field-input" id="courseRating" placeholder="72.4" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Slope Rating</label>
+                    <input class="field-input" id="courseSlope" placeholder="128" />
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Dress Code</label>
+                    <input class="field-input" id="courseDress" placeholder="Collared shirts required..." />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field" style="margin-top:1.2rem">
+              <label class="field-label">Additional Notes / Rules</label>
+              <textarea class="field-textarea" id="courseNotes" placeholder="League-specific rules, local rules, cart rules, pace of play policy..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📢 League Announcements</span>
+            <button class="btn btn-gold btn-sm" onclick="saveAnnouncements()">💾 Save</button>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label class="field-label">Current Announcement (shown on public site)</label>
+              <textarea class="field-textarea" id="announcement" placeholder="e.g. Week 4 results are in! Great round by all. Rain date for Week 5 is July 13th if needed."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MANAGE SCORES ── -->
+      <div class="page" id="page-scores">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">🏆 Score Management</span>
+            <button class="btn btn-danger btn-sm" onclick="confirmClearAll()">🗑 Clear All Scores</button>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1.5rem;letter-spacing:0.05em;">
+              Edit or delete any match score. Changes update standings immediately.
+            </p>
+            <div id="scoresEditor"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── WEEKLY HIGHLIGHTS ── -->
+      <div class="page" id="page-highlights">
+
+        <!-- Week picker -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">⭐ Weekly Highlights Editor</span>
+            <a href="pdpgolf-highlights.html" target="_blank" class="btn btn-outline btn-sm">👁 View Public Page</a>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1.2rem;letter-spacing:0.05em;">
+              Select a week to enter awards, commissioner's notes, and manage comments.
+            </p>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0" id="hlWeekSelector"></div>
+          </div>
+        </div>
+
+        <!-- Awards -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title" id="hlWeekLabel">🏅 Awards — Week 1</span>
+            <button class="btn btn-gold btn-sm" onclick="saveHighlights()">💾 Save Highlights</button>
+          </div>
+          <div class="panel-body">
+            <div class="field-grid field-grid-2">
+
+              <div class="field">
+                <label class="field-label">📍 Closest to the Pin — Men's · Winner</label>
+                <input class="field-input" id="hl-pinMen" placeholder="e.g. John Smith" />
+              </div>
+              <div class="field">
+                <label class="field-label">📍 Closest to the Pin — Men's · Detail</label>
+                <input class="field-input" id="hl-pinMenDetail" placeholder="e.g. 4'2\" on Hole 7" />
+              </div>
+
+              <div class="field">
+                <label class="field-label">📍 Closest to the Pin — Women's · Winner</label>
+                <input class="field-input" id="hl-pinWomen" placeholder="e.g. Jane Doe" />
+              </div>
+              <div class="field">
+                <label class="field-label">📍 Closest to the Pin — Women's · Detail</label>
+                <input class="field-input" id="hl-pinWomenDetail" placeholder="e.g. 6'8\" on Hole 12" />
+              </div>
+
+              <div class="field">
+                <label class="field-label">💨 Longest Drive — Men's · Winner</label>
+                <input class="field-input" id="hl-driveMen" placeholder="e.g. Mike Johnson" />
+              </div>
+              <div class="field">
+                <label class="field-label">💨 Longest Drive — Men's · Detail</label>
+                <input class="field-input" id="hl-driveMenDetail" placeholder="e.g. 312 yards on Hole 4" />
+              </div>
+
+              <div class="field">
+                <label class="field-label">💨 Longest Drive — Women's · Winner</label>
+                <input class="field-input" id="hl-driveWomen" placeholder="e.g. Sarah Williams" />
+              </div>
+              <div class="field">
+                <label class="field-label">💨 Longest Drive — Women's · Detail</label>
+                <input class="field-input" id="hl-driveWomenDetail" placeholder="e.g. 228 yards on Hole 4" />
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Commissioner's Note -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📝 Commissioner's Notes</span>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label class="field-label">Weekly Recap & Commentary (visible to all players)</label>
+              <textarea class="field-textarea" id="hl-note" rows="7"
+                placeholder="Write your weekly recap here — highlights, funny moments, shoutouts, upcoming info, weather notes, etc. This appears prominently on the public Highlights page."></textarea>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.8rem">
+              <button class="btn btn-gold" onclick="saveHighlights()">💾 Save All Highlights</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Manager -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">💬 Comments Manager</span>
+            <button class="btn btn-danger btn-sm" onclick="clearWeekComments()">🗑 Clear All Comments</button>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:0.72rem;color:rgba(245,240,232,0.4);margin-bottom:1rem;letter-spacing:0.05em;">
+              Review and delete any player comment for this week.
+            </p>
+            <div id="hlCommentsAdmin"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="page" id="page-settings">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">🔐 Change Admin Password</span>
+          </div>
+          <div class="panel-body">
+            <div class="field-grid field-grid-2">
+              <div class="field">
+                <label class="field-label">New Username</label>
+                <input class="field-input" id="newUser" placeholder="admin" />
+              </div>
+              <div class="field">
+                <label class="field-label">New Password</label>
+                <input class="field-input" id="newPass" type="password" placeholder="Min 8 characters" />
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm Password</label>
+                <input class="field-input" id="confirmPass" type="password" placeholder="Repeat password" />
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top:1rem">
+              <button class="btn btn-gold" onclick="changeCredentials()">Update Credentials</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">⚙️ League Settings</span>
+            <button class="btn btn-gold btn-sm" onclick="saveLeagueSettings()">💾 Save</button>
+          </div>
+          <div class="panel-body">
+            <div class="field-grid field-grid-2">
+              <div class="field">
+                <label class="field-label">League Name</label>
+                <input class="field-input" id="leagueName" value="PDP Monday Mixer" />
+              </div>
+              <div class="field">
+                <label class="field-label">Season Year</label>
+                <input class="field-input" id="seasonYear" value="2025" />
+              </div>
+              <div class="field">
+                <label class="field-label">Number of Teams</label>
+                <input class="field-input" id="numTeams" type="number" value="14" min="4" max="20" />
+              </div>
+              <div class="field">
+                <label class="field-label">Number of Weeks</label>
+                <input class="field-input" id="numWeeks" type="number" value="13" min="4" max="30" />
+              </div>
+              <div class="field">
+                <label class="field-label">Points for Win</label>
+                <input class="field-input" id="ptsWin" type="number" value="2" />
+              </div>
+              <div class="field">
+                <label class="field-label">Points for Tie</label>
+                <input class="field-input" id="ptsTie" type="number" value="1" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">💾 Data Management</span>
+          </div>
+          <div class="panel-body">
+            <div class="btn-group">
+              <button class="btn btn-outline" onclick="exportData()">⬇ Export All Data (JSON)</button>
+              <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">⬆ Import Data</button>
+              <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /adminShell -->
+
+<!-- CONFIRM DIALOG -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMsg">This action cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="btn btn-danger" id="confirmOkBtn">Yes, Delete</button>
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CREDENTIALS ──────────────────────────────────────────────────────
+const DEFAULT_CREDS = { user:'admin', pass:'pdpgolf2025' };
+
+function getCreds() {
+  const c = localStorage.getItem('pdp_creds');
+  return c ? JSON.parse(c) : DEFAULT_CREDS;
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const creds = getCreds();
+  if (u === creds.user && p === creds.pass) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminShell').classList.add('visible');
+    initAdmin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginPass').value = '';
+  }
+}
+
+function doLogout() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('adminShell').classList.remove('visible');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function changeCredentials() {
+  const u = document.getElementById('newUser').value.trim();
+  const p = document.getElementById('newPass').value;
+  const c = document.getElementById('confirmPass').value;
+  if (!u || !p) { showToast('error','Please fill in all fields'); return; }
+  if (p.length < 6) { showToast('error','Password must be 6+ characters'); return; }
+  if (p !== c) { showToast('error','Passwords do not match'); return; }
+  localStorage.setItem('pdp_creds', JSON.stringify({user:u, pass:p}));
+  showToast('success','Credentials updated successfully');
+  document.getElementById('newUser').value='';
+  document.getElementById('newPass').value='';
+  document.getElementById('confirmPass').value='';
+}
+
+// ── DATA STORE ────────────────────────────────────────────────────────
+const DEFAULT_TEAMS = [
+  "Bogey Nights","Slicer & Hooker","Ball Busters","Putt Putt Pass",
+  "Love Birdies","Caddyshacks","Foot Wedgies","Par-Tee Animals",
+  "IrreCartless","The VanPaar's","Putt Masters","Shanks & Putts",
+  "Slice Slice Baby","Tee-quila Valley"
+];
+const DEFAULT_DATES = [
+  "June 1, 2025","June 8, 2025","June 15, 2025","June 22, 2025","June 29, 2025",
+  "July 6, 2025","July 13, 2025","July 20, 2025","July 27, 2025",
+  "August 3, 2025","August 10, 2025","August 17, 2025","August 24, 2025"
+];
+
+function load(key, def) {
+  const v = localStorage.getItem('pdpgolf_'+key);
+  return v ? JSON.parse(v) : (typeof def === 'function' ? def() : def);
+}
+function save(key, val) { localStorage.setItem('pdpgolf_'+key, JSON.stringify(val)); }
+
+let TEAMS      = load('teams', DEFAULT_TEAMS);
+let DATES      = load('dates', DEFAULT_DATES);
+let PLAYERS    = load('players', Array.from({length:14},()=>({p1:'',p2:'',email:'',handicap:''})));
+let TEE_TIMES  = load('teetimes', {});
+let COURSE     = load('course', {});
+let SCORES     = load('scores', {});
+let ANNOUNCE   = load('announce', '');
+
+function SCHEDULE() {
+  const n=14, teams=Array.from({length:n},(_,i)=>i), rounds=[];
+  const fixed=teams[0]; let rotating=teams.slice(1);
+  for(let r=0;r<n-1;r++){
+    const round=[];
+    round.push([fixed,rotating[0]]);
+    for(let i=1;i<n/2;i++) round.push([rotating[i],rotating[n-1-i]]);
+    rounds.push(round);
+    rotating=[rotating[rotating.length-1],...rotating.slice(0,-1)];
+  }
+  return rounds;
+}
+const SCHED = SCHEDULE();
+
+// ── NAV ───────────────────────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard:'League <em>Dashboard</em>',teams:'Team <em>Names</em>',
+  schedule:'Match <em>Schedule</em>',teeTimes:'<em>Tee Times</em>',
+  course:'Course <em>Info</em>',scores:'Manage <em>Scores</em>',
+  highlights:'Weekly <em>Highlights</em>',settings:'<em>Settings</em>'
+};
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topbarTitle').innerHTML = PAGE_TITLES[id] || id;
+  if(id==='dashboard') renderDashboard();
+  if(id==='teams') renderTeams();
+  if(id==='schedule') renderScheduleEditor();
+  if(id==='teeTimes') renderTeeTimesEditor();
+  if(id==='course') renderCourse();
+  if(id==='scores') renderScoresEditor();
+  if(id==='highlights') renderHighlights();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+function initAdmin() {
+  renderDashboard();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────
+function renderDashboard() {
+  const scoreCount = Object.keys(SCORES).length;
+  const total = 91; // 14-team round robin = 91 matches
+  document.getElementById('dash-teams').textContent = TEAMS.length;
+  document.getElementById('dash-weeks').textContent = '12';
+  document.getElementById('dash-scores').textContent = scoreCount;
+  document.getElementById('dash-complete').textContent = Math.round(scoreCount/total*100)+'%';
+
+  // Standings preview
+  const stats = getStats(12);
+  const top5 = stats.slice(0,5);
+  document.getElementById('dashStandings').innerHTML = `
+    <table class="teams-table">
+      <thead><tr><th>#</th><th>Team</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
+      <tbody>${top5.map((s,i)=>`
+        <tr>
+          <td class="team-num">${i+1}</td>
+          <td>${s.name}</td>
+          <td style="text-align:center">${s.w}</td>
+          <td style="text-align:center">${s.l}</td>
+          <td style="text-align:center;color:var(--gold-light);font-weight:600">${s.pts}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    ${stats.length>5?`<p style="font-size:0.65rem;color:rgba(245,240,232,0.3);margin-top:0.8rem;text-align:center">Showing top 5 of ${stats.length} teams</p>`:''}`;
+}
+
+function getStats(weeks) {
+  const stats = TEAMS.map(t=>({name:t,w:0,l:0,t:0,pts:0,against:0}));
+  for(let w=0;w<weeks;w++){
+    SCHED[w].forEach(([ai,bi])=>{
+      const key=`${w}-${ai}-${bi}`;
+      const s=SCORES[key]; if(!s) return;
+      const sa=Number(s.scoreA),sb=Number(s.scoreB);
+      if(sa>sb){stats[ai].w++;stats[bi].l++;stats[ai].pts+=2;}
+      else if(sb>sa){stats[bi].w++;stats[ai].l++;stats[bi].pts+=2;}
+      else{stats[ai].t++;stats[bi].t++;stats[ai].pts++;stats[bi].pts++;}
+      stats[ai].against+=sb; stats[bi].against+=sa;
+    });
+  }
+  return stats.sort((a,b)=>b.pts-a.pts||a.against-b.against);
+}
+
+// ── TEAMS ─────────────────────────────────────────────────────────────
+function renderTeams() {
+  const tbody = document.getElementById('teamsTableBody');
+  tbody.innerHTML = TEAMS.map((name,i)=>{
+    const p = PLAYERS[i]||{};
+    return `<tr>
+      <td class="team-num">${i+1}</td>
+      <td><input class="inline-input" id="tn-${i}" value="${escHtml(name)}" placeholder="Team name" /></td>
+      <td><input class="inline-input" id="p1-${i}" value="${escHtml(p.p1||'')}" placeholder="His name" /></td>
+      <td><input class="inline-input" id="p2-${i}" value="${escHtml(p.p2||'')}" placeholder="Her name" /></td>
+      <td><input class="inline-input" id="em-${i}" value="${escHtml(p.email||'')}" placeholder="email@example.com" /></td>
+      <td><input class="inline-input" id="hc-${i}" value="${escHtml(p.handicap||'')}" placeholder="e.g. 14/22" style="width:90px" /></td>
+    </tr>`;
+  }).join('');
+}
+
+function saveTeams() {
+  TEAMS = TEAMS.map((_,i)=>document.getElementById(`tn-${i}`).value.trim()||`Team ${i+1}`);
+  PLAYERS = TEAMS.map((_,i)=>({
+    p1: document.getElementById(`p1-${i}`).value.trim(),
+    p2: document.getElementById(`p2-${i}`).value.trim(),
+    email: document.getElementById(`em-${i}`).value.trim(),
+    handicap: document.getElementById(`hc-${i}`).value.trim(),
+  }));
+  save('teams', TEAMS);
+  save('players', PLAYERS);
+  showToast('gold','Team names & contacts saved!');
+  renderTeams();
+}
+
+// ── SCHEDULE EDITOR ───────────────────────────────────────────────────
+function renderScheduleEditor() {
+  const container = document.getElementById('scheduleEditor');
+  container.innerHTML = SCHED.map((round,w)=>`
+    <div class="schedule-week-row">
+      <div class="schedule-week-head">
+        <span class="sched-wk-label">Week ${w+1}</span>
+        <input class="field-input" id="date-${w}" value="${escHtml(DATES[w]||'')}"
+          placeholder="Date e.g. June 1, 2025"
+          style="max-width:220px;padding:0.4rem 0.7rem;font-size:0.78rem" />
+      </div>
+      <div class="schedule-week-body">
+        ${round.map(([ai,bi])=>`
+          <div class="matchup-edit-row">
+            <select class="field-select" style="font-size:0.78rem;padding:0.35rem 0.6rem">
+              ${TEAMS.map((t,ti)=>`<option value="${ti}"${ti===ai?' selected':''}>${t}</option>`).join('')}
+            </select>
+            <span class="vs-badge">vs</span>
+            <select class="field-select" style="font-size:0.78rem;padding:0.35rem 0.6rem">
+              ${TEAMS.map((t,ti)=>`<option value="${ti}"${ti===bi?' selected':''}>${t}</option>`).join('')}
+            </select>
+            <span style="font-size:0.6rem;color:rgba(245,240,232,0.2);letter-spacing:0.1em">AUTO</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function saveSchedule() {
+  DATES = SCHED.map((_,w)=>document.getElementById(`date-${w}`).value.trim()||DATES[w]);
+  save('dates', DATES);
+  showToast('gold','Schedule dates saved!');
+}
+
+// ── TEE TIMES ─────────────────────────────────────────────────────────
+function renderTeeTimesEditor() {
+  const container = document.getElementById('teeTimesEditor');
+  container.innerHTML = SCHED.map((round,w)=>`
+    <div class="schedule-week-row">
+      <div class="schedule-week-head">
+        <span class="sched-wk-label">Week ${w+1}</span>
+        <span style="font-size:0.68rem;color:rgba(245,240,232,0.35)">${DATES[w]||''}</span>
+      </div>
+      <div class="schedule-week-body">
+        ${round.map(([ai,bi],mi)=>{
+          const key=`${w}-${mi}`;
+          const val=TEE_TIMES[key]||'';
+          return `<div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:0.8rem">
+            <span style="font-size:0.75rem;color:var(--warm-white)">
+              <span style="color:var(--gold)">${TEAMS[ai]}</span> vs ${TEAMS[bi]}
+            </span>
+            <input class="field-input" id="tt-${w}-${mi}" value="${escHtml(val)}"
+              placeholder="e.g. 4:30 PM" style="padding:0.4rem 0.7rem;font-size:0.78rem" />
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function saveTimes() {
+  SCHED.forEach((round,w)=>{
+    round.forEach((_,mi)=>{
+      const key=`${w}-${mi}`;
+      const val=document.getElementById(`tt-${w}-${mi}`).value.trim();
+      if(val) TEE_TIMES[key]=val; else delete TEE_TIMES[key];
+    });
+  });
+  save('teetimes', TEE_TIMES);
+  showToast('gold','Tee times saved!');
+}
+
+// ── COURSE ───────────────────────────────────────────────────────────
+function renderCourse() {
+  const fields = ['courseName','courseAddress','coursePhone','courseWebsite',
+    'courseProShop','courseFormat','coursePar','courseYardsMen','courseYardsLadies',
+    'courseRating','courseSlope','courseDress','courseNotes','announcement'];
+  fields.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && COURSE[id]!==undefined) el.value = COURSE[id];
+  });
+  const ann = document.getElementById('announcement');
+  if(ann) ann.value = ANNOUNCE;
+}
+function saveCourse() {
+  const fields = ['courseName','courseAddress','coursePhone','courseWebsite',
+    'courseProShop','courseFormat','coursePar','courseYardsMen','courseYardsLadies',
+    'courseRating','courseSlope','courseDress','courseNotes'];
+  fields.forEach(id=>{ const el=document.getElementById(id); if(el) COURSE[id]=el.value; });
+  save('course', COURSE);
+  showToast('gold','Course info saved!');
+}
+function saveAnnouncements() {
+  ANNOUNCE = document.getElementById('announcement').value;
+  save('announce', ANNOUNCE);
+  showToast('gold','Announcement saved!');
+}
+
+// ── SCORES EDITOR ─────────────────────────────────────────────────────
+function renderScoresEditor() {
+  const container = document.getElementById('scoresEditor');
+  container.innerHTML = SCHED.map((round,w)=>`
+    <div class="score-week-panel">
+      <p style="font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.6rem;font-weight:600">
+        Week ${w+1} — ${DATES[w]||''}
+      </p>
+      <div class="score-match-grid">
+        ${round.map(([ai,bi])=>{
+          const key=`${w}-${ai}-${bi}`;
+          const s=SCORES[key]||{scoreA:'',scoreB:''};
+          return `<div class="score-row-edit">
+            <span class="score-team-name">${TEAMS[ai]} <span style="color:var(--gold);font-style:italic;font-family:'Cormorant Garamond',serif"> vs </span> ${TEAMS[bi]}</span>
+            <input class="score-num-input" id="sa-${key}" value="${s.scoreA}" placeholder="—" type="number" min="0" />
+            <span class="score-vs">–</span>
+            <input class="score-num-input" id="sb-${key}" value="${s.scoreB}" placeholder="—" type="number" min="0" />
+            <div style="display:flex;gap:0.4rem">
+              <button class="btn btn-gold btn-sm" onclick="saveScore('${key}')">✓</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteScore('${key}')">✕</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function saveScore(key) {
+  const sa = document.getElementById(`sa-${key}`).value;
+  const sb = document.getElementById(`sb-${key}`).value;
+  if(sa===''||sb===''){showToast('error','Enter both scores');return;}
+  SCORES[key]={scoreA:sa,scoreB:sb};
+  save('scores',SCORES);
+  showToast('success','Score saved!');
+  renderDashboard();
+}
+
+function deleteScore(key) {
+  delete SCORES[key];
+  save('scores',SCORES);
+  document.getElementById(`sa-${key}`).value='';
+  document.getElementById(`sb-${key}`).value='';
+  showToast('success','Score cleared');
+  renderDashboard();
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────
+function saveLeagueSettings() {
+  const settings = {
+    leagueName: document.getElementById('leagueName').value,
+    seasonYear: document.getElementById('seasonYear').value,
+    numTeams: document.getElementById('numTeams').value,
+    numWeeks: document.getElementById('numWeeks').value,
+    ptsWin: document.getElementById('ptsWin').value,
+    ptsTie: document.getElementById('ptsTie').value,
+  };
+  save('league_settings', settings);
+  showToast('gold','League settings saved!');
+}
+
+// ── DATA EXPORT/IMPORT ────────────────────────────────────────────────
+function exportData() {
+  const data = { TEAMS, DATES, PLAYERS, TEE_TIMES, COURSE, SCORES, ANNOUNCE };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pdpgolf-data.json'; a.click();
+  showToast('success','Data exported!');
+}
+
+function importData(evt) {
+  const file = evt.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if(d.TEAMS) { TEAMS=d.TEAMS; save('teams',TEAMS); }
+      if(d.DATES) { DATES=d.DATES; save('dates',DATES); }
+      if(d.PLAYERS) { PLAYERS=d.PLAYERS; save('players',PLAYERS); }
+      if(d.TEE_TIMES) { TEE_TIMES=d.TEE_TIMES; save('teetimes',TEE_TIMES); }
+      if(d.COURSE) { COURSE=d.COURSE; save('course',COURSE); }
+      if(d.SCORES) { SCORES=d.SCORES; save('scores',SCORES); }
+      if(d.ANNOUNCE) { ANNOUNCE=d.ANNOUNCE; save('announce',ANNOUNCE); }
+      showToast('success','Data imported successfully!');
+      renderDashboard();
+    } catch { showToast('error','Invalid file format'); }
+  };
+  reader.readAsText(file);
+}
+
+// ── HIGHLIGHTS ────────────────────────────────────────────────────────
+const HL_WEEKS = 13;
+const HL_DATES = [
+  "June 1, 2026","June 8, 2026","June 15, 2026","June 22, 2026","June 29, 2026",
+  "July 6, 2026","July 13, 2026","July 20, 2026","July 27, 2026",
+  "Aug 3, 2026","Aug 10, 2026","Aug 17, 2026","Aug 24, 2026"
+];
+const HL_FIELDS = ['pinMen','pinMenDetail','pinWomen','pinWomenDetail','driveMen','driveMenDetail','driveWomen','driveWomenDetail','note'];
+
+let hlCurrentWeek = 0;
+
+function renderHighlights() {
+  // Mark admin session so highlight page can show delete buttons
+  localStorage.setItem('pdpgolf_admin_authed','1');
+
+  // Week selector
+  const sel = document.getElementById('hlWeekSelector');
+  if(sel) sel.innerHTML = Array.from({length:HL_WEEKS},(_,i)=>{
+    const hasData = !!localStorage.getItem(`pdpgolf_hl_${i}`);
+    return `<button class="btn${i===hlCurrentWeek?' btn-gold':' btn-outline'} btn-sm"
+      style="min-height:34px"
+      onclick="hlSelectWeek(${i})">Wk ${i+1}${hasData?' ⭐':''}</button>`;
+  }).join('');
+
+  // Label
+  const lbl = document.getElementById('hlWeekLabel');
+  if(lbl) lbl.textContent = `🏅 Awards — Week ${hlCurrentWeek+1} · ${HL_DATES[hlCurrentWeek]}`;
+
+  // Load existing data into fields
+  const existing = localStorage.getItem(`pdpgolf_hl_${hlCurrentWeek}`);
+  const data = existing ? JSON.parse(existing) : {};
+  HL_FIELDS.forEach(f => {
+    const el = document.getElementById(`hl-${f}`);
+    if(el) el.value = data[f] || '';
+  });
+
+  // Comments
+  renderHlComments();
+}
+
+function hlSelectWeek(w) {
+  hlCurrentWeek = w;
+  renderHighlights();
+}
+
+function saveHighlights() {
+  const data = {};
+  HL_FIELDS.forEach(f => {
+    const el = document.getElementById(`hl-${f}`);
+    if(el) data[f] = el.value.trim();
+  });
+  localStorage.setItem(`pdpgolf_hl_${hlCurrentWeek}`, JSON.stringify(data));
+  renderHighlights(); // refresh week selector badges
+  showToast('gold',`Week ${hlCurrentWeek+1} highlights saved!`);
+}
+
+function renderHlComments() {
+  const container = document.getElementById('hlCommentsAdmin');
+  if(!container) return;
+  const raw = localStorage.getItem(`pdpgolf_comments_${hlCurrentWeek}`);
+  const comments = raw ? JSON.parse(raw) : [];
+  if(comments.length === 0) {
+    container.innerHTML = `<p style="font-size:0.75rem;color:rgba(245,240,232,0.25);text-align:center;padding:1.5rem">No comments yet for Week ${hlCurrentWeek+1}</p>`;
+    return;
+  }
+  container.innerHTML = comments.map((c,i)=>{
+    const ts = new Date(c.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:0.9rem 1rem;margin-bottom:0.6rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+      <div>
+        <div style="display:flex;gap:0.7rem;align-items:baseline;margin-bottom:0.3rem;flex-wrap:wrap">
+          <span style="font-size:0.75rem;font-weight:600;color:var(--gold)">${escHtml(c.name)}</span>
+          ${c.team?`<span style="font-size:0.6rem;color:rgba(245,240,232,0.35);text-transform:uppercase;letter-spacing:0.1em">${escHtml(c.team)}</span>`:''}
+          <span style="font-size:0.6rem;color:rgba(245,240,232,0.2)">${ts}</span>
+        </div>
+        <div style="font-size:0.82rem;color:rgba(245,240,232,0.75);line-height:1.5">${escHtml(c.body)}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="hlDeleteComment(${i})" style="flex-shrink:0">✕ Delete</button>
+    </div>`;
+  }).join('');
+}
+
+function hlDeleteComment(idx) {
+  const raw = localStorage.getItem(`pdpgolf_comments_${hlCurrentWeek}`);
+  const comments = raw ? JSON.parse(raw) : [];
+  comments.splice(idx,1);
+  localStorage.setItem(`pdpgolf_comments_${hlCurrentWeek}`, JSON.stringify(comments));
+  renderHlComments();
+  showToast('success','Comment deleted');
+}
+
+function clearWeekComments() {
+  document.getElementById('confirmTitle').textContent = `Clear Week ${hlCurrentWeek+1} Comments?`;
+  document.getElementById('confirmMsg').textContent = 'All player comments for this week will be permanently deleted.';
+  document.getElementById('confirmOkBtn').onclick = () => {
+    localStorage.removeItem(`pdpgolf_comments_${hlCurrentWeek}`);
+    renderHlComments();
+    closeConfirm();
+    showToast('success','All comments cleared');
+  };
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+// ── CONFIRM DIALOG ────────────────────────────────────────────────────
+let confirmCallback = null;
+function confirmClearAll() {
+  document.getElementById('confirmTitle').textContent = 'Clear All Scores?';
+  document.getElementById('confirmMsg').textContent = 'This will permanently delete all match results and reset the standings to zero.';
+  document.getElementById('confirmOkBtn').onclick = () => {
+    SCORES = {}; save('scores',SCORES);
+    renderScoresEditor(); renderDashboard();
+    closeConfirm(); showToast('success','All scores cleared');
+  };
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function showToast(type, msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

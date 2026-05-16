@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDP Monday Mixer — Weekly Highlights</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a3a2a;
+    --deep-green: #0f2318;
+    --mid-green: #2d5a3d;
+    --light-green: #4a8c5c;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #9a7a2a;
+    --cream: #f5f0e8;
+    --warm-white: #faf7f2;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    background: var(--deep-green);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,26,16,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 0 1.5rem;
+  }
+  .nav-inner {
+    max-width: 1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.2rem; color:var(--gold);
+    letter-spacing:0.05em; font-weight:600;
+    text-decoration:none;
+  }
+  .nav-links { display:flex; gap:2rem; list-style:none; }
+  .nav-links a {
+    font-size:0.68rem; letter-spacing:0.18em;
+    text-transform:uppercase; color:rgba(245,240,232,0.65);
+    text-decoration:none; transition:color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+  .nav-hamburger {
+    display:none; flex-direction:column; gap:5px;
+    cursor:pointer; padding:6px; border:none; background:transparent;
+  }
+  .nav-hamburger span {
+    display:block; width:24px; height:2px;
+    background:var(--gold); border-radius:2px; transition:all 0.3s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity:0; }
+  .nav-hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  .mobile-menu {
+    display:none; position:fixed; top:64px; left:0; right:0;
+    background:rgba(5,15,10,0.98); backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(201,168,76,0.15);
+    padding:0.5rem 0; z-index:99; flex-direction:column;
+  }
+  .mobile-menu.open { display:flex; }
+  .mobile-menu a {
+    font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase;
+    color:rgba(245,240,232,0.7); text-decoration:none;
+    padding:0.9rem 1.5rem; border-bottom:1px solid rgba(201,168,76,0.07);
+    transition:color 0.2s;
+  }
+  .mobile-menu a:hover { color:var(--gold); }
+
+  /* ── HERO ── */
+  .page-hero {
+    padding: 5rem 1.5rem 4rem;
+    text-align:center;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(74,140,92,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 10%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      linear-gradient(160deg,#0a1a10 0%,#0f2318 60%,#1a3a2a 100%);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    position:relative; overflow:hidden;
+  }
+  .page-hero::after {
+    content:'';
+    position:absolute; bottom:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .hero-eyebrow {
+    font-size:0.65rem; letter-spacing:0.4em; color:var(--gold);
+    text-transform:uppercase; margin-bottom:0.8rem;
+  }
+  .hero-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(2.5rem,7vw,5rem); font-weight:300;
+    color:var(--warm-white); line-height:1;
+  }
+  .hero-title em { color:var(--gold); font-style:italic; }
+  .hero-sub {
+    font-size:0.72rem; letter-spacing:0.2em; color:rgba(245,240,232,0.4);
+    text-transform:uppercase; margin-top:1rem;
+  }
+  .gold-line {
+    width:60px; height:2px; margin:1.5rem auto 0;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+
+  /* ── WEEK SELECTOR ── */
+  .week-nav {
+    background:rgba(5,15,10,0.6);
+    border-bottom:1px solid rgba(201,168,76,0.12);
+    padding:1rem 1.5rem;
+    display:flex; align-items:center; justify-content:center;
+    gap:0.5rem; flex-wrap:wrap;
+    position:sticky; top:64px; z-index:50;
+    backdrop-filter:blur(8px);
+  }
+  .wk-btn {
+    background:transparent;
+    border:1px solid rgba(201,168,76,0.25);
+    color:rgba(245,240,232,0.55);
+    padding:0.45rem 0.85rem; border-radius:2px;
+    font-family:'Josefin Sans',sans-serif;
+    font-size:0.62rem; letter-spacing:0.15em;
+    cursor:pointer; transition:all 0.2s; min-height:36px;
+  }
+  .wk-btn:hover, .wk-btn.active {
+    background:var(--gold); border-color:var(--gold);
+    color:var(--deep-green); font-weight:600;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .content { max-width:900px; margin:0 auto; padding:3rem 1.5rem 5rem; }
+
+  .empty-state {
+    text-align:center; padding:5rem 2rem;
+  }
+  .empty-icon { font-size:4rem; opacity:0.3; margin-bottom:1rem; }
+  .empty-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.8rem; font-weight:300; color:rgba(245,240,232,0.4);
+  }
+  .empty-sub { font-size:0.72rem; color:rgba(245,240,232,0.25); margin-top:0.5rem; letter-spacing:0.1em; }
+
+  /* ── SECTION HEADER ── */
+  .section-eyebrow {
+    font-size:0.6rem; letter-spacing:0.38em; color:var(--gold);
+    text-transform:uppercase; font-weight:600; margin-bottom:1.5rem;
+    display:flex; align-items:center; gap:0.8rem;
+  }
+  .section-eyebrow::after {
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg,rgba(201,168,76,0.3),transparent);
+  }
+
+  /* ── AWARDS GRID ── */
+  .awards-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:1rem; margin-bottom:2.5rem;
+  }
+  .award-card {
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,168,76,0.18);
+    border-radius:6px; padding:1.4rem 1.5rem;
+    position:relative; overflow:hidden;
+    transition:border-color 0.25s, transform 0.2s;
+  }
+  .award-card:hover { border-color:rgba(201,168,76,0.4); transform:translateY(-2px); }
+  .award-card::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:2px;
+  }
+  .award-card.pin-men::before   { background:linear-gradient(90deg,#1a5c2e,#27ae60); }
+  .award-card.pin-women::before { background:linear-gradient(90deg,#7b1a4a,#e056a0); }
+  .award-card.drive-men::before { background:linear-gradient(90deg,var(--gold-dark),var(--gold)); }
+  .award-card.drive-women::before { background:linear-gradient(90deg,#4a1a7b,#9b59b6); }
+
+  .award-icon { font-size:2rem; margin-bottom:0.6rem; display:block; }
+  .award-label {
+    font-size:0.55rem; letter-spacing:0.28em; text-transform:uppercase;
+    font-weight:600; margin-bottom:0.3rem;
+  }
+  .award-card.pin-men   .award-label { color:#4ddc82; }
+  .award-card.pin-women .award-label { color:#e882be; }
+  .award-card.drive-men .award-label { color:var(--gold-light); }
+  .award-card.drive-women .award-label { color:#b980f0; }
+
+  .award-winner {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.5rem; font-weight:600; color:var(--warm-white);
+    line-height:1.1;
+  }
+  .award-detail {
+    font-size:0.72rem; color:rgba(245,240,232,0.45);
+    margin-top:0.3rem; letter-spacing:0.05em;
+  }
+  .award-empty {
+    font-size:0.75rem; color:rgba(245,240,232,0.2);
+    font-style:italic;
+  }
+
+  /* ── COMMISSIONER'S NOTE ── */
+  .commish-card {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(201,168,76,0.18);
+    border-radius:6px; padding:2rem;
+    margin-bottom:2.5rem; position:relative;
+  }
+  .commish-card::before {
+    content:'"';
+    font-family:'Cormorant Garamond',serif;
+    font-size:8rem; line-height:1;
+    color:rgba(201,168,76,0.06);
+    position:absolute; top:-1rem; left:1rem;
+    pointer-events:none;
+  }
+  .commish-text {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.15rem; font-weight:300;
+    color:rgba(245,240,232,0.85); line-height:1.75;
+    white-space:pre-wrap; position:relative; z-index:1;
+  }
+  .commish-sig {
+    margin-top:1.2rem; font-size:0.62rem;
+    letter-spacing:0.2em; color:var(--gold);
+    text-transform:uppercase;
+  }
+
+  /* ── COMMENTS ── */
+  .comments-section { margin-top:0.5rem; }
+
+  .comment-form {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(201,168,76,0.15);
+    border-radius:6px; padding:1.4rem; margin-bottom:2rem;
+  }
+  .comment-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:0.8rem; }
+  .comment-input, .comment-textarea {
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(201,168,76,0.2); border-radius:3px;
+    padding:0.7rem 0.9rem; color:var(--warm-white);
+    font-family:'Josefin Sans',sans-serif; font-size:0.85rem;
+    transition:border-color 0.2s; width:100%;
+  }
+  .comment-input:focus, .comment-textarea:focus {
+    outline:none; border-color:var(--gold); background:rgba(201,168,76,0.04);
+  }
+  /* Prevent iOS zoom */
+  @media(max-width:768px) {
+    .comment-input, .comment-textarea { font-size:1rem; }
+  }
+  .comment-textarea { resize:vertical; min-height:80px; line-height:1.5; }
+  .comment-footer-row {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    flex-wrap:wrap;
+  }
+  .comment-hint { font-size:0.6rem; color:rgba(245,240,232,0.25); letter-spacing:0.08em; }
+  .comment-submit-btn {
+    background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+    border:none; border-radius:3px; padding:0.6rem 1.4rem;
+    font-family:'Josefin Sans',sans-serif; font-size:0.65rem;
+    letter-spacing:0.2em; text-transform:uppercase; font-weight:600;
+    color:var(--deep-green); cursor:pointer; transition:all 0.2s;
+    min-height:40px;
+  }
+  .comment-submit-btn:hover { box-shadow:0 6px 20px rgba(201,168,76,0.35); transform:translateY(-1px); }
+
+  .comments-list { display:flex; flex-direction:column; gap:1rem; }
+
+  .comment-item {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(201,168,76,0.1);
+    border-radius:5px; padding:1.1rem 1.3rem;
+    position:relative; animation:fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  .comment-meta {
+    display:flex; align-items:baseline; gap:0.8rem; margin-bottom:0.5rem; flex-wrap:wrap;
+  }
+  .comment-author {
+    font-size:0.72rem; font-weight:600; color:var(--gold); letter-spacing:0.08em;
+  }
+  .comment-team {
+    font-size:0.6rem; color:rgba(245,240,232,0.35);
+    letter-spacing:0.1em; text-transform:uppercase;
+  }
+  .comment-time {
+    font-size:0.58rem; color:rgba(245,240,232,0.25); margin-left:auto;
+  }
+  .comment-body {
+    font-size:0.85rem; color:rgba(245,240,232,0.8); line-height:1.6;
+  }
+  .comment-delete {
+    position:absolute; top:0.7rem; right:0.8rem;
+    background:transparent; border:none; cursor:pointer;
+    font-size:0.7rem; color:rgba(192,57,43,0.4); display:none;
+    transition:color 0.2s;
+  }
+  .comment-delete:hover { color:#e74c3c; }
+  .is-admin .comment-delete { display:block; }
+
+  .no-comments {
+    text-align:center; padding:2rem;
+    font-size:0.78rem; color:rgba(245,240,232,0.2); letter-spacing:0.1em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background:var(--deep-green);
+    border-top:1px solid rgba(201,168,76,0.12);
+    padding:2.5rem 1.5rem; text-align:center;
+  }
+  .footer-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.6rem; color:var(--gold); font-weight:300; letter-spacing:0.1em;
+  }
+  .footer-links {
+    display:flex; gap:2rem; justify-content:center; margin-top:1rem; flex-wrap:wrap;
+  }
+  .footer-links a {
+    font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
+    color:rgba(245,240,232,0.3); text-decoration:none; transition:color 0.2s;
+  }
+  .footer-links a:hover { color:var(--gold); }
+  .footer-copy {
+    font-size:0.6rem; color:rgba(245,240,232,0.15); margin-top:1.5rem; letter-spacing:0.1em;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:1.5rem; right:1.5rem;
+    padding:0.85rem 1.3rem; border-radius:4px;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.08em;
+    transform:translateY(4rem); opacity:0;
+    transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index:9999; pointer-events:none;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.gold    { background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:var(--deep-green); }
+  .toast.success { background:linear-gradient(135deg,#1a5c2e,#27ae60); color:#fff; }
+  .toast.error   { background:linear-gradient(135deg,#7b1a1a,#e74c3c); color:#fff; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:700px) {
+    .nav-links { display:none; }
+    .nav-hamburger { display:flex; }
+    .page-hero { padding:3.5rem 1rem 3rem; }
+    .awards-grid { grid-template-columns:1fr; }
+    .comment-fields { grid-template-columns:1fr; }
+    .week-nav { top:64px; padding:0.75rem 1rem; gap:0.4rem; }
+    .content { padding:2rem 1rem 4rem; }
+    .commish-card { padding:1.4rem; }
+    .toast { left:1rem; right:1rem; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="pdpgolf.html" class="nav-logo">⛳ PDP Monday Mixer</a>
+    <ul class="nav-links">
+      <li><a href="pdpgolf.html">Home</a></li>
+      <li><a href="pdpgolf.html#standings">Standings</a></li>
+      <li><a href="pdpgolf.html#schedule">Schedule</a></li>
+      <li><a href="pdpgolf-highlights.html" class="active">Weekly Highlights</a></li>
+      <li><a href="pdpgolf.html#submit">Submit Scores</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="pdpgolf.html" onclick="closeMenu()">Home</a>
+  <a href="pdpgolf.html#standings" onclick="closeMenu()">Standings</a>
+  <a href="pdpgolf.html#schedule" onclick="closeMenu()">Schedule</a>
+  <a href="pdpgolf-highlights.html" onclick="closeMenu()">⭐ Weekly Highlights</a>
+  <a href="pdpgolf.html#submit" onclick="closeMenu()">⛳ Submit Scores</a>
+</div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <p class="hero-eyebrow">PDP Monday Mixer · 2026 Season</p>
+  <h1 class="hero-title">Weekly <em>Highlights</em></h1>
+  <p class="hero-sub">Awards · Commissioner's Notes · Comments</p>
+  <div class="gold-line"></div>
+</div>
+
+<!-- WEEK SELECTOR -->
+<div class="week-nav" id="weekNav"></div>
+
+<!-- CONTENT -->
+<div class="content" id="mainContent">
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🏌️</div>
+    <div class="empty-title">No highlights yet</div>
+    <p class="empty-sub">Check back after the first round is played</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PDP Monday Mixer</div>
+  <div class="footer-links">
+    <a href="pdpgolf.html">Home</a>
+    <a href="pdpgolf.html#standings">Standings</a>
+    <a href="pdpgolf.html#schedule">Schedule</a>
+    <a href="pdpgolf-highlights.html">Weekly Highlights</a>
+  </div>
+  <p class="footer-copy">www.PDPGolf.com — All rights reserved</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WEEKS = 13;
+const WEEK_DATES = [
+  "June 1, 2026","June 8, 2026","June 15, 2026","June 22, 2026","June 29, 2026",
+  "July 6, 2026","July 13, 2026","July 20, 2026","July 27, 2026",
+  "Aug 3, 2026","Aug 10, 2026","Aug 17, 2026","Aug 24, 2026"
+];
+
+// ── STORAGE HELPERS ───────────────────────────────────────────────────
+function loadHL(week) {
+  const d = localStorage.getItem(`pdpgolf_hl_${week}`);
+  return d ? JSON.parse(d) : null;
+}
+function loadComments(week) {
+  const d = localStorage.getItem(`pdpgolf_comments_${week}`);
+  return d ? JSON.parse(d) : [];
+}
+function saveComments(week, arr) {
+  localStorage.setItem(`pdpgolf_comments_${week}`, JSON.stringify(arr));
+}
+function isAdmin() {
+  return !!localStorage.getItem('pdpgolf_admin_authed');
+}
+
+// ── WEEK SELECTOR ─────────────────────────────────────────────────────
+let currentWeek = 0;
+
+function renderWeekNav() {
+  const el = document.getElementById('weekNav');
+  el.innerHTML = Array.from({length:WEEKS},(_,i)=>{
+    const hasData = !!loadHL(i);
+    return `<button class="wk-btn${i===currentWeek?' active':''}${hasData?' has-data':''}"
+      onclick="selectWeek(${i})" title="${WEEK_DATES[i]}">
+      Wk ${i+1}${hasData?' ⭐':''}
+    </button>`;
+  }).join('');
+}
+
+function selectWeek(w) {
+  currentWeek = w;
+  renderWeekNav();
+  renderContent();
+}
+
+// ── CONTENT RENDER ────────────────────────────────────────────────────
+function renderContent() {
+  const hl = loadHL(currentWeek);
+  const comments = loadComments(currentWeek);
+  const content = document.getElementById('mainContent');
+  const date = WEEK_DATES[currentWeek];
+
+  if (!hl && comments.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⛳</div>
+        <div class="empty-title">Week ${currentWeek+1} highlights coming soon</div>
+        <p class="empty-sub">${date} · Check back after the round</p>
+      </div>
+      ${renderCommentSection(currentWeek, comments)}`;
+    attachCommentHandler();
+    return;
+  }
+
+  const adminClass = isAdmin() ? 'is-admin' : '';
+
+  let html = '';
+
+  // Awards
+  if (hl) {
+    html += `
+    <div class="section-eyebrow">Week ${currentWeek+1} Awards &nbsp;·&nbsp; ${date}</div>
+    <div class="awards-grid">
+      ${awardCard('pin-men',   '📍', "Closest to the Pin — Men's",   hl.pinMen,   hl.pinMenDetail)}
+      ${awardCard('pin-women', '📍', "Closest to the Pin — Women's", hl.pinWomen, hl.pinWomenDetail)}
+      ${awardCard('drive-men',   '💨', "Longest Drive — Men's",   hl.driveMen,   hl.driveMenDetail)}
+      ${awardCard('drive-women', '💨', "Longest Drive — Women's", hl.driveWomen, hl.driveWomenDetail)}
+    </div>`;
+  }
+
+  // Commissioner's note
+  if (hl && hl.note && hl.note.trim()) {
+    html += `
+    <div class="section-eyebrow">Commissioner's Notes</div>
+    <div class="commish-card">
+      <div class="commish-text">${escHtml(hl.note)}</div>
+      <div class="commish-sig">— PDP Monday Mixer Commissioner</div>
+    </div>`;
+  }
+
+  // Comments
+  html += renderCommentSection(currentWeek, comments);
+
+  content.innerHTML = html;
+  attachCommentHandler();
+}
+
+function awardCard(cls, icon, label, winner, detail) {
+  return `<div class="award-card ${cls}">
+    <span class="award-icon">${icon}</span>
+    <div class="award-label">${label}</div>
+    ${winner
+      ? `<div class="award-winner">${escHtml(winner)}</div>
+         ${detail ? `<div class="award-detail">${escHtml(detail)}</div>` : ''}`
+      : `<div class="award-empty">Not yet recorded</div>`}
+  </div>`;
+}
+
+function renderCommentSection(week, comments) {
+  const adminClass = isAdmin() ? 'is-admin' : '';
+  return `
+  <div class="section-eyebrow">League Comments</div>
+  <div class="comments-section">
+    <div class="comment-form">
+      <div class="comment-fields">
+        <input class="comment-input" id="cmtName" placeholder="Your name" maxlength="40" />
+        <input class="comment-input" id="cmtTeam" placeholder="Team name (optional)" maxlength="40" />
+      </div>
+      <textarea class="comment-textarea" id="cmtBody" placeholder="Share your thoughts about the week…" maxlength="500"></textarea>
+      <div class="comment-footer-row" style="margin-top:0.8rem">
+        <span class="comment-hint">Max 500 characters · Be respectful ⛳</span>
+        <button class="comment-submit-btn" onclick="submitComment(${week})">Post Comment</button>
+      </div>
+    </div>
+    <div class="comments-list ${adminClass}" id="commentsList">
+      ${comments.length === 0
+        ? `<div class="no-comments">No comments yet — be the first! 🏌️</div>`
+        : comments.map((c,i) => commentHTML(c, i, week)).join('')}
+    </div>
+  </div>`;
+}
+
+function commentHTML(c, i, week) {
+  const adminClass = isAdmin() ? 'is-admin' : '';
+  const ts = new Date(c.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  return `<div class="comment-item ${adminClass}" id="cmt-${i}">
+    <div class="comment-meta">
+      <span class="comment-author">${escHtml(c.name)}</span>
+      ${c.team ? `<span class="comment-team">${escHtml(c.team)}</span>` : ''}
+      <span class="comment-time">${ts}</span>
+    </div>
+    <div class="comment-body">${escHtml(c.body)}</div>
+    <button class="comment-delete" onclick="deleteComment(${week},${i})" title="Delete">✕ Delete</button>
+  </div>`;
+}
+
+function attachCommentHandler() { /* handlers inline via onclick */ }
+
+function submitComment(week) {
+  const name = document.getElementById('cmtName').value.trim();
+  const team = document.getElementById('cmtTeam').value.trim();
+  const body = document.getElementById('cmtBody').value.trim();
+  if (!name) { showToast('error','Please enter your name'); return; }
+  if (!body)  { showToast('error','Please write a comment'); return; }
+  const comments = loadComments(week);
+  comments.unshift({ name, team, body, ts: Date.now() });
+  saveComments(week, comments);
+  renderContent();
+  showToast('success','Comment posted!');
+}
+
+function deleteComment(week, idx) {
+  if (!isAdmin()) return;
+  const comments = loadComments(week);
+  comments.splice(idx, 1);
+  saveComments(week, comments);
+  renderContent();
+  showToast('gold','Comment deleted');
+}
+
+// ── NAV HELPERS ───────────────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(type, msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ── AUTO-SELECT most recent week with data ────────────────────────────
+function init() {
+  let latest = -1;
+  for (let w = WEEKS-1; w >= 0; w--) {
+    if (loadHL(w)) { latest = w; break; }
+  }
+  currentWeek = latest >= 0 ? latest : 0;
+  renderWeekNav();
+  renderContent();
+}
+
+init();
+</script>
+</body>
+</html>

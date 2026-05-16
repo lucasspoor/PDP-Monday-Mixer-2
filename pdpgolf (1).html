@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDP Monday Mixer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a3a2a;
+    --deep-green: #0f2318;
+    --mid-green: #2d5a3d;
+    --light-green: #4a8c5c;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #9a7a2a;
+    --cream: #f5f0e8;
+    --warm-white: #faf7f2;
+    --text-dark: #1a1a14;
+    --text-mid: #3d3d2e;
+    --text-light: #7a7a60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    background: var(--deep-green);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 30% 60%, rgba(74,140,92,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 75% 20%, rgba(201,168,76,0.10) 0%, transparent 55%),
+      linear-gradient(160deg, #0a1a10 0%, #0f2318 40%, #1a3a2a 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='40' cy='40' r='1' fill='rgba(201,168,76,0.06)'/%3E%3C/svg%3E");
+    background-size: 80px 80px;
+  }
+
+  /* Decorative grass lines */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-dark));
+  }
+
+  .hero-flag {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: flagWave 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 12px rgba(201,168,76,0.4));
+  }
+  @keyframes flagWave {
+    0%,100% { transform: rotate(-3deg) scale(1); }
+    50% { transform: rotate(3deg) scale(1.05); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    font-weight: 300;
+    line-height: 0.92;
+    text-align: center;
+    color: var(--warm-white);
+    letter-spacing: -0.01em;
+    opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+  }
+
+  .hero-title em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .hero-sub {
+    font-size: 0.8rem; letter-spacing: 0.25em;
+    color: rgba(245,240,232,0.55);
+    text-transform: uppercase;
+    margin-top: 1.5rem;
+    opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+  }
+
+  .hero-divider {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 2rem auto;
+    opacity: 0; animation: fadeUp 0.9s 0.65s forwards;
+  }
+
+  .hero-meta {
+    display: flex; gap: 3rem;
+    opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+  }
+
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 600;
+    color: var(--gold-light);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    color: rgba(245,240,232,0.5);
+    text-transform: uppercase;
+  }
+
+  .nav-dots {
+    position: absolute; bottom: 2.5rem;
+    display: flex; gap: 0.75rem;
+    opacity: 0; animation: fadeUp 0.9s 1s forwards;
+  }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(201,168,76,0.3);
+    cursor: pointer; border: 1px solid var(--gold-dark);
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .nav-dot:hover { background: var(--gold); transform: scale(1.3); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,26,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 0 2rem;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; color: var(--gold);
+    letter-spacing: 0.05em; font-weight: 600;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: rgba(245,240,232,0.7);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-submit {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--deep-green) !important;
+    padding: 0.5rem 1.2rem;
+    font-weight: 600 !important;
+    border-radius: 2px;
+    transition: opacity 0.2s !important;
+  }
+  .nav-submit:hover { opacity: 0.85; color: var(--deep-green) !important; }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 2rem; }
+
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-header { text-align: center; margin-bottom: 4rem; }
+
+  .section-eyebrow {
+    font-size: 0.65rem; letter-spacing: 0.4em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 300; color: var(--warm-white);
+    line-height: 1.1;
+  }
+
+  .section-title em { color: var(--gold); font-style: italic; }
+
+  .gold-line {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 1.5rem auto 0;
+  }
+
+  /* ── STANDINGS ── */
+  #standings { background: var(--deep-green); }
+
+  .week-selector {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+  }
+  .week-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: rgba(245,240,232,0.6);
+    padding: 0.4rem 0.9rem;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.15em;
+    cursor: pointer; border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .week-btn:hover, .week-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--deep-green);
+    font-weight: 600;
+  }
+
+  .standings-table {
+    width: 100%; border-collapse: collapse;
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px; overflow: hidden;
+  }
+  .standings-table thead tr {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  }
+  .standings-table thead th {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--deep-green); padding: 1rem 1.2rem;
+    font-weight: 600; text-align: left;
+  }
+  .standings-table thead th:first-child { text-align: center; width: 60px; }
+  .standings-table thead th.num { text-align: center; }
+
+  .standings-table tbody tr {
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    transition: background 0.2s;
+  }
+  .standings-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+
+  .standings-table td {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.85rem; color: rgba(245,240,232,0.85);
+  }
+  .standings-table td.rank {
+    text-align: center; font-weight: 600;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; color: var(--gold);
+  }
+  .standings-table td.num { text-align: center; }
+  .standings-table td.team-name {
+    font-weight: 600; color: var(--warm-white);
+  }
+
+  .rank-1 td.rank { color: #FFD700; }
+  .rank-2 td.rank { color: #C0C0C0; }
+  .rank-3 td.rank { color: #CD7F32; }
+
+  .trophy { font-size: 0.9rem; margin-left: 0.3rem; }
+
+  /* ── SCHEDULE ── */
+  #schedule {
+    background: linear-gradient(180deg, #0a1a10 0%, var(--forest) 100%);
+  }
+
+  .schedule-week {
+    margin-bottom: 2.5rem;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 4px; overflow: hidden;
+  }
+
+  .schedule-week-header {
+    background: rgba(201,168,76,0.08);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 0.9rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .schedule-week-header:hover { background: rgba(201,168,76,0.12); }
+
+  .week-label {
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold);
+    font-weight: 600;
+  }
+  .week-date {
+    font-size: 0.7rem; color: rgba(245,240,232,0.45);
+    letter-spacing: 0.1em;
+  }
+  .week-chevron { color: var(--gold); font-size: 0.8rem; transition: transform 0.3s; }
+  .schedule-week.open .week-chevron { transform: rotate(90deg); }
+
+  .schedule-matchups {
+    display: none; padding: 1rem 1.5rem; gap: 0.75rem;
+    flex-direction: column;
+  }
+  .schedule-week.open .schedule-matchups { display: flex; }
+
+  .matchup {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.08);
+    border-radius: 3px; padding: 0.75rem 1.2rem;
+    transition: border-color 0.2s;
+  }
+  .matchup:hover { border-color: rgba(201,168,76,0.25); }
+  .matchup-team {
+    font-size: 0.85rem; color: var(--warm-white); font-weight: 600;
+    min-width: 180px;
+  }
+  .matchup-team.right { text-align: right; }
+  .matchup-vs {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; font-style: italic;
+    color: var(--gold); padding: 0 1rem;
+  }
+  .matchup-num {
+    font-size: 0.6rem; color: rgba(245,240,232,0.3);
+    letter-spacing: 0.15em;
+  }
+
+  /* ── SUBMIT SCORES ── */
+  #submit {
+    background: var(--deep-green);
+    position: relative; overflow: hidden;
+  }
+  #submit::before {
+    content: '⛳';
+    position: absolute; right: 5%; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14rem; opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .submit-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 6px; padding: 3rem;
+    max-width: 680px; margin: 0 auto;
+    position: relative;
+  }
+
+  .submit-card::before {
+    content: '';
+    position: absolute; top: 0; left: 2rem; right: 2rem; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .form-full { grid-column: 1 / -1; }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .form-label {
+    font-size: 0.62rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--gold);
+    font-weight: 600;
+  }
+
+  .form-input, .form-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 3px; padding: 0.7rem 1rem;
+    color: var(--warm-white);
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus, .form-select:focus {
+    outline: none; border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+  }
+  .form-select option { background: #1a3a2a; color: var(--warm-white); }
+
+  .score-row {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 1rem; align-items: center; margin-top: 0.5rem;
+  }
+  .score-divider {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--gold); text-align: center;
+    font-style: italic;
+  }
+
+  .submit-btn {
+    width: 100%; margin-top: 2rem;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border: none; border-radius: 3px;
+    padding: 1rem;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.3em;
+    text-transform: uppercase; font-weight: 600;
+    color: var(--deep-green);
+    cursor: pointer; transition: all 0.25s;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.35);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  .success-msg {
+    display: none; text-align: center;
+    padding: 1.5rem;
+    background: rgba(74,140,92,0.15);
+    border: 1px solid rgba(74,140,92,0.4);
+    border-radius: 3px; margin-top: 1rem;
+  }
+  .success-msg h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; color: #7dc98f; font-weight: 400;
+  }
+  .success-msg p { font-size: 0.8rem; color: rgba(245,240,232,0.6); margin-top: 0.5rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--deep-green);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; color: var(--gold); font-weight: 300;
+    letter-spacing: 0.1em;
+  }
+  .footer-sub {
+    font-size: 0.65rem; letter-spacing: 0.25em;
+    color: rgba(245,240,232,0.3); margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+  .footer-copy {
+    font-size: 0.65rem; color: rgba(245,240,232,0.2);
+    margin-top: 2rem; letter-spacing: 0.1em;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--deep-green); padding: 1rem 1.5rem;
+    border-radius: 4px; font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.1em;
+    transform: translateY(4rem); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── HAMBURGER ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 6px; border: none;
+    background: transparent;
+  }
+  .nav-hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--gold); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none;
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: rgba(5,15,10,0.98);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-gold);
+    padding: 1rem 0;
+    z-index: 99;
+    flex-direction: column;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-size: 0.8rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: rgba(245,240,232,0.75);
+    text-decoration: none; padding: 1rem 2rem;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:last-child {
+    color: var(--gold); font-weight: 600; border-bottom: none;
+  }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  /* ── STANDINGS SCROLL WRAPPER ── */
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 4px;
+  }
+  .standings-table { min-width: 520px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    /* NAV */
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .nav-logo { font-size: 1.1rem; }
+    nav { padding: 0 1rem; }
+
+    /* HERO */
+    .hero { padding: 2rem 1.2rem; min-height: 100svh; }
+    .hero-flag { font-size: 2.8rem; }
+    .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.2em; }
+    .hero-title { font-size: clamp(2.8rem, 13vw, 5rem); }
+    .hero-sub { font-size: 0.65rem; letter-spacing: 0.15em; }
+    .hero-meta { gap: 1.5rem; }
+    .hero-stat-num { font-size: 1.8rem; }
+    .hero-stat-label { font-size: 0.55rem; }
+    .hero-divider { margin: 1.2rem auto; }
+
+    /* SECTIONS */
+    section { padding: 3.5rem 1rem; }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-title { font-size: clamp(1.8rem, 8vw, 2.8rem); }
+
+    /* STANDINGS */
+    .week-selector { gap: 0.5rem; }
+    .week-btn { padding: 0.5rem 0.7rem; font-size: 0.6rem; min-height: 36px; }
+    .standings-table td { padding: 0.75rem 0.8rem; font-size: 0.78rem; }
+    .standings-table thead th { padding: 0.75rem 0.8rem; font-size: 0.55rem; }
+
+    /* SCHEDULE */
+    .schedule-week-header { padding: 0.85rem 1rem; }
+    .week-label { font-size: 0.6rem; }
+    .week-date { font-size: 0.62rem; }
+    .schedule-matchups { padding: 0.75rem 0.75rem; gap: 0.6rem; }
+    .matchup {
+      flex-direction: column; gap: 0.2rem;
+      text-align: center; padding: 0.75rem 1rem;
+    }
+    .matchup-team { min-width: unset; font-size: 0.82rem; }
+    .matchup-team.right { text-align: center; }
+    .matchup-vs { padding: 0.1rem 0; font-size: 0.85rem; }
+
+    /* SUBMIT */
+    .submit-card { padding: 1.5rem 1rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-input, .form-select {
+      font-size: 1rem; /* prevents iOS zoom */
+      padding: 0.85rem 1rem;
+      min-height: 48px;
+    }
+    .score-row { gap: 0.6rem; }
+    .submit-btn {
+      padding: 1.1rem;
+      font-size: 0.8rem;
+      min-height: 52px;
+    }
+
+    /* FOOTER */
+    footer { padding: 2rem 1rem; }
+    .footer-logo { font-size: 1.5rem; }
+
+    /* TOAST */
+    .toast {
+      bottom: 1rem; left: 1rem; right: 1rem;
+      text-align: center;
+    }
+  }
+
+  @media(max-width: 400px) {
+    .hero-title { font-size: clamp(2.4rem, 14vw, 3rem); }
+    .hero-meta { gap: 1rem; }
+    .week-btn { padding: 0.45rem 0.55rem; font-size: 0.55rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-flag">⛳</div>
+  <div class="hero-eyebrow">www.PDPGolf.com</div>
+  <h1 class="hero-title">PDP <em>Monday</em><br>Mixer</h1>
+  <p class="hero-sub">13 Weeks · 14 Teams · 2026 Season</p>
+  <div class="hero-divider"></div>
+  <div class="hero-meta">
+    <div class="hero-stat">
+      <span class="hero-stat-num">14</span>
+      <span class="hero-stat-label">Teams</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">13</span>
+      <span class="hero-stat-label">Weeks</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">91</span>
+      <span class="hero-stat-label">Matches</span>
+    </div>
+  </div>
+  <div class="nav-dots">
+    <a href="#standings" class="nav-dot" title="Standings"></a>
+    <a href="#schedule" class="nav-dot" title="Schedule"></a>
+    <a href="#submit" class="nav-dot" title="Submit Scores"></a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">PDP Monday Mixer</a>
+    <ul class="nav-links">
+      <li><a href="#standings">Standings</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="#submit" class="nav-submit">Submit Scores</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#standings" onclick="closeMenu()">Standings</a>
+  <a href="#schedule" onclick="closeMenu()">Schedule</a>
+  <a href="pdpgolf-highlights.html" onclick="closeMenu()">⭐ Weekly Highlights</a>
+  <a href="#submit" onclick="closeMenu()">⛳ Submit Scores</a>
+</div>
+
+<!-- STANDINGS -->
+<section id="standings">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Season 2026</p>
+      <h2 class="section-title">League <em>Standings</em></h2>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="week-selector" id="weekSelector"></div>
+
+    <div class="table-scroll">
+    <table class="standings-table" id="standingsTable">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team</th>
+          <th class="num">Handicap</th>
+          <th class="num">W</th>
+          <th class="num">L</th>
+          <th class="num">T</th>
+          <th class="num">Points</th>
+          <th class="num">Total PTS</th>
+        </tr>
+      </thead>
+      <tbody id="standingsBody"></tbody>
+    </table>
+    </div>
+
+    <p style="text-align:center;font-size:0.7rem;color:rgba(245,240,232,0.35);margin-top:1.5rem;letter-spacing:0.1em;">
+      SCORING: 2 pts per win · 1 pt per tie · 0 pts per loss
+    </p>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Full Season</p>
+      <h2 class="section-title">Match <em>Schedule</em></h2>
+      <div class="gold-line"></div>
+    </div>
+    <div id="scheduleContainer"></div>
+  </div>
+</section>
+
+<!-- SUBMIT SCORES -->
+<section id="submit">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Weekly Reporting</p>
+      <h2 class="section-title">Submit <em>Scores</em></h2>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="submit-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Week</label>
+          <select class="form-select" id="submitWeek"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Team</label>
+          <select class="form-select" id="submitTeam"></select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Opponent</label>
+          <select class="form-select" id="submitOpponent"></select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Match Score</label>
+          <div class="score-row">
+            <input class="form-input" id="scoreA" type="number" min="0" max="99" placeholder="Your score" />
+            <div class="score-divider">vs</div>
+            <input class="form-input" id="scoreB" type="number" min="0" max="99" placeholder="Their score" />
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Notes (optional)</label>
+          <input class="form-input" id="submitNotes" type="text" placeholder="e.g. Weather delay, playoff holes..." />
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitScores()">⛳ &nbsp; Submit Match Result</button>
+
+      <div class="success-msg" id="successMsg">
+        <h3>Score Submitted! 🏆</h3>
+        <p>The standings have been updated. Thank you for reporting promptly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PDP Monday Mixer</div>
+  <p class="footer-sub">2026 Season · 13 Weeks · 14 Teams</p>
+  <p class="footer-copy">www.PDPGolf.com — All rights reserved</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const TEAMS = [
+  "Bogey Nights",        //  0
+  "Slicer & Hooker",     //  1
+  "Ball Busters",        //  2
+  "Putt Putt Pass",      //  3
+  "Love Birdies",        //  4
+  "Caddyshacks",         //  5
+  "Foot Wedgies",        //  6
+  "Par-Tee Animals",     //  7
+  "IrreCartless",        //  8
+  "The VanPaar's",       //  9
+  "Putt Masters",        // 10
+  "Shanks & Putts",      // 11
+  "Slice Slice Baby",    // 12
+  "Tee-quila Valley",    // 13
+];
+
+// True 14-team round-robin: 13 rounds, each team plays every other team exactly once.
+// 14 teams = even number, so no bye needed. 7 matches per week, 91 total.
+const SCHEDULE_RAW = generateRoundRobin();
+
+function generateRoundRobin() {
+  const n = 14;
+  const teams = Array.from({length: n}, (_, i) => i);
+  const rounds = [];
+  const fixed = teams[0];
+  let rotating = teams.slice(1);
+  for (let r = 0; r < n - 1; r++) {
+    const round = [];
+    round.push([fixed, rotating[0]]);
+    for (let i = 1; i < n / 2; i++) {
+      round.push([rotating[i], rotating[n - 1 - i]]);
+    }
+    rounds.push(round);
+    rotating = [rotating[rotating.length - 1], ...rotating.slice(0, -1)];
+  }
+  return rounds;
+}
+
+// ── STANDINGS STATE ──────────────────────────────────────────────────
+// stored scores: { "week-teamA-teamB": {scoreA, scoreB} }
+const scores = JSON.parse(localStorage.getItem('pdpgolf_scores') || '{}');
+
+function saveScores() {
+  localStorage.setItem('pdpgolf_scores', JSON.stringify(scores));
+}
+
+function getTeamStats(upToWeek) {
+  // upToWeek is 1-indexed; Points = match points up to selected week
+  // Total PTS = cumulative score points (raw game scores) across ALL recorded weeks
+  const players = JSON.parse(localStorage.getItem('pdpgolf_players') || '[]');
+  const stats = TEAMS.map((t, i) => ({
+    name: t,
+    handicap: (players[i] && players[i].handicap) ? players[i].handicap : '—',
+    w: 0, l: 0, t: 0, pts: 0, totalPts: 0
+  }));
+
+  // Points (W/L/T) count only up to the selected week
+  for (let w = 0; w < upToWeek; w++) {
+    SCHEDULE_RAW[w].forEach(([ai, bi]) => {
+      const key = `${w}-${ai}-${bi}`;
+      const s = scores[key];
+      if (!s) return;
+      const sa = Number(s.scoreA), sb = Number(s.scoreB);
+      if (sa > sb) { stats[ai].w++; stats[bi].l++; stats[ai].pts+=2; }
+      else if (sb > sa) { stats[bi].w++; stats[ai].l++; stats[bi].pts+=2; }
+      else { stats[ai].t++; stats[bi].t++; stats[ai].pts++; stats[bi].pts++; }
+    });
+  }
+
+  // Total PTS = sum of all raw game scores across every recorded week
+  for (let w = 0; w < SCHEDULE_RAW.length; w++) {
+    SCHEDULE_RAW[w].forEach(([ai, bi]) => {
+      const key = `${w}-${ai}-${bi}`;
+      const s = scores[key];
+      if (!s) return;
+      stats[ai].totalPts += Number(s.scoreA);
+      stats[bi].totalPts += Number(s.scoreB);
+    });
+  }
+
+  return stats.sort((a, b) => b.pts - a.pts || b.totalPts - a.totalPts);
+}
+
+let currentWeekView = 1;
+
+// ── RENDER STANDINGS ─────────────────────────────────────────────────
+function renderStandings() {
+  const tbody = document.getElementById('standingsBody');
+  const stats = getTeamStats(currentWeekView);
+  tbody.innerHTML = stats.map((s, idx) => {
+    const rank = idx+1;
+    const trophy = rank===1?' 🏆':rank===2?' 🥈':rank===3?' 🥉':'';
+    return `<tr class="rank-${rank}">
+      <td class="rank">${rank}</td>
+      <td class="team-name">${s.name}${trophy}</td>
+      <td class="num" style="color:rgba(245,240,232,0.55)">${s.handicap}</td>
+      <td class="num">${s.w}</td>
+      <td class="num">${s.l}</td>
+      <td class="num">${s.t}</td>
+      <td class="num" style="color:var(--gold-light);font-weight:600">${s.pts}</td>
+      <td class="num" style="color:rgba(245,240,232,0.7)">${s.totalPts}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RENDER WEEK SELECTOR ─────────────────────────────────────────────
+function renderWeekSelector() {
+  const container = document.getElementById('weekSelector');
+  container.innerHTML = Array.from({length:13},(_,i)=>{
+    const w = i+1;
+    return `<button class="week-btn${w===currentWeekView?' active':''}"
+      onclick="setWeek(${w})">Wk ${w}</button>`;
+  }).join('');
+}
+
+function setWeek(w) {
+  currentWeekView = w;
+  renderWeekSelector();
+  renderStandings();
+}
+
+// ── RENDER SCHEDULE ──────────────────────────────────────────────────
+const WEEK_DATES = [
+  "June 1, 2025","June 8, 2025","June 15, 2025","June 22, 2025","June 29, 2025",
+  "July 6, 2025","July 13, 2025","July 20, 2025","July 27, 2025",
+  "Aug 3, 2025","Aug 10, 2025","Aug 17, 2025","Aug 24, 2025"
+];
+
+function renderSchedule() {
+  const container = document.getElementById('scheduleContainer');
+  container.innerHTML = SCHEDULE_RAW.map((round, w) => {
+    const matchups = round.map(([ai,bi], mi) => {
+      const key = `${w}-${ai}-${bi}`;
+      const s = scores[key];
+      const scoreStr = s ? `<span style="color:var(--gold);font-size:0.75rem;margin-left:1rem">${s.scoreA} – ${s.scoreB}</span>` : '';
+      return `<div class="matchup">
+        <span class="matchup-team">${TEAMS[ai]}</span>
+        <span class="matchup-vs">vs${scoreStr}</span>
+        <span class="matchup-team right">${TEAMS[bi]}</span>
+      </div>`;
+    }).join('');
+
+    const isOpen = w === 0;
+    return `<div class="schedule-week${isOpen?' open':''}" id="sw-${w}">
+      <div class="schedule-week-header" onclick="toggleWeek(${w})">
+        <span class="week-label">Week ${w+1}</span>
+        <span class="week-date">${WEEK_DATES[w]}</span>
+        <span class="week-chevron">›</span>
+      </div>
+      <div class="schedule-matchups">${matchups}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleWeek(w) {
+  const el = document.getElementById(`sw-${w}`);
+  el.classList.toggle('open');
+}
+
+// ── SUBMIT FORM ──────────────────────────────────────────────────────
+function populateSubmitForm() {
+  const weekSel = document.getElementById('submitWeek');
+  weekSel.innerHTML = Array.from({length:13},(_,i)=>`<option value="${i}">Week ${i+1} — ${WEEK_DATES[i]}</option>`).join('');
+
+  const teamSel = document.getElementById('submitTeam');
+  teamSel.innerHTML = TEAMS.map((t,i)=>`<option value="${i}">${t}</option>`).join('');
+
+  teamSel.addEventListener('change', updateOpponentList);
+  weekSel.addEventListener('change', updateOpponentList);
+  updateOpponentList();
+}
+
+function updateOpponentList() {
+  const week = Number(document.getElementById('submitWeek').value);
+  const teamIdx = Number(document.getElementById('submitTeam').value);
+  const round = SCHEDULE_RAW[week];
+  let opponent = null;
+  for (const [ai, bi] of round) {
+    if (ai === teamIdx) { opponent = bi; break; }
+    if (bi === teamIdx) { opponent = ai; break; }
+  }
+  const oppSel = document.getElementById('submitOpponent');
+  if (opponent !== null) {
+    oppSel.innerHTML = `<option value="${opponent}">${TEAMS[opponent]}</option>`;
+  } else {
+    oppSel.innerHTML = `<option value="">— No match this week —</option>`;
+  }
+}
+
+function submitScores() {
+  const week = Number(document.getElementById('submitWeek').value);
+  const teamIdx = Number(document.getElementById('submitTeam').value);
+  const oppIdx = Number(document.getElementById('submitOpponent').value);
+  const scoreA = document.getElementById('scoreA').value;
+  const scoreB = document.getElementById('scoreB').value;
+
+  if (!scoreA || !scoreB) { showToast('Please enter both scores'); return; }
+  if (isNaN(Number(scoreA)) || isNaN(Number(scoreB))) { showToast('Scores must be numbers'); return; }
+
+  const round = SCHEDULE_RAW[week];
+  let key = null, flip = false;
+  for (const [ai, bi] of round) {
+    if (ai === teamIdx && bi === oppIdx) { key = `${week}-${ai}-${bi}`; flip = false; break; }
+    if (bi === teamIdx && ai === oppIdx) { key = `${week}-${ai}-${bi}`; flip = true; break; }
+  }
+
+  if (!key) { showToast('Matchup not found for this week'); return; }
+
+  scores[key] = flip
+    ? { scoreA: scoreB, scoreB: scoreA }
+    : { scoreA: scoreA, scoreB: scoreB };
+
+  saveScores();
+  renderStandings();
+  renderSchedule();
+
+  document.getElementById('scoreA').value = '';
+  document.getElementById('scoreB').value = '';
+  document.getElementById('submitNotes').value = '';
+
+  const msg = document.getElementById('successMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 5000);
+  showToast('✓ Score submitted & standings updated!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── MOBILE MENU ───────────────────────────────────────────────────────
+function toggleMenu() {
+  const btn = document.getElementById('hamburger');
+  const menu = document.getElementById('mobileMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+renderWeekSelector();
+renderStandings();
+renderSchedule();
+populateSubmitForm();
+</script>
+</body>
+</html>
